@@ -7,7 +7,7 @@ import {
   InputAdornment,
 } from '@material-ui/core';
 import { Icon } from '@material-ui/core';
-import { Mutation } from 'react-apollo';
+import { useMutation } from '@apollo/react-hooks';
 import {
   SearchQueryVariables,
   SET_SEARCH_QUERY,
@@ -32,42 +32,37 @@ const useStyles = makeStyles({
 
 export const SearchBar = ({ searchQuery }: SearchQuery) => {
   const classes = useStyles();
+  const [setSearchQuery] = useMutation<boolean, SearchQueryVariables>(SET_SEARCH_QUERY);
 
   return (
-    <Mutation<boolean, SearchQueryVariables> mutation={SET_SEARCH_QUERY}>
-      {setSearchQuery => (
-        <Toolbar className={classes.root} variant="regular">
-          <TextField
-            className={classes.input}
-            placeholder="Поиск"
-            onChange={e => setSearchQuery({ variables: { query: e.target.value } })}
-            value={searchQuery}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Icon aria-label="search" className={classes.iconButton}>
-                    search
-                  </Icon>
-                </InputAdornment>
-              ),
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    color="primary"
-                    className={classes.iconButton}
-                    aria-label="close"
-                    onClick={_ => {
-                      setSearchQuery({ variables: { query: '' } });
-                    }}
-                  >
-                    <Icon>close</Icon>
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
-        </Toolbar>
-      )}
-    </Mutation>
+    <Toolbar className={classes.root} variant="regular">
+      <TextField
+        className={classes.input}
+        placeholder="Поиск"
+        onChange={e => setSearchQuery({ variables: { query: e.target.value } })}
+        value={searchQuery}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <Icon aria-label="search" className={classes.iconButton}>
+                search
+              </Icon>
+            </InputAdornment>
+          ),
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton
+                color="primary"
+                className={classes.iconButton}
+                aria-label="close"
+                onClick={_ => setSearchQuery({ variables: { query: '' } })}
+              >
+                <Icon>close</Icon>
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
+      />
+    </Toolbar>
   );
 };

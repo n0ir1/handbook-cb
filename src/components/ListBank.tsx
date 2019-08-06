@@ -1,5 +1,5 @@
 import React from 'react';
-import { Query } from 'react-apollo';
+import { useQuery } from '@apollo/react-hooks';
 import {
   Table,
   TableHead,
@@ -79,58 +79,53 @@ const Header = () => (
   </TableHead>
 );
 
-export const ListBank = () => (
-  <Query<QueryListBankDetails> query={GET_BANKS_DETAILS} onError={e => console.log(e)}>
-    {({ loading, error, data }) => {
-      if (loading || error || !data) return null;
+export const ListBank = () => {
+  const { loading, error, data } = useQuery<QueryListBankDetails>(GET_BANKS_DETAILS);
+  if (loading || error || !data) return null;
 
-      const {
-        listBank,
-        searchQuery,
-        filterNames: { name, bik },
-      } = data;
+  const {
+    listBank,
+    searchQuery,
+    filterNames: { name, bik },
+  } = data;
 
-      const searchData = searchByValue(
-        listBank,
-        searchQuery,
-        ({ id, ...bankInfo }, key) => findAllFields(bankInfo, key),
-      );
+  const searchData = searchByValue(listBank, searchQuery, ({ id, ...bankInfo }, key) =>
+    findAllFields(bankInfo, key),
+  );
 
-      const filterData = filterByFields(
-        searchData,
-        [['name', name], ['bik', bik]],
-        ({ id, ...bankInfo }, key, fieldName) =>
-          findByFields(bankInfo, key, fieldName as keyof typeof bankInfo),
-      );
+  const filterData = filterByFields(
+    searchData,
+    [['name', name], ['bik', bik]],
+    ({ id, ...bankInfo }, key, fieldName) =>
+      findByFields(bankInfo, key, fieldName as keyof typeof bankInfo),
+  );
 
-      return (
-        <Paper elevation={2}>
-          <SearchBar searchQuery={searchQuery} />
-          <FilterBar bik={bik} name={name} />
-          <Table>
-            <Header />
-            <TableBody>
-              {filterData.length ? (
-                filterData.map((bank, i) => (
-                  <TableRow key={bank.id}>
-                    <TableCell>{i + 1}</TableCell>
-                    <Bank data={bank} />
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow style={{ height: '300px' }}>
-                  <TableCell
-                    colSpan={6}
-                    style={{ textAlign: 'center', paddingTop: 0, paddingBottom: 0 }}
-                  >
-                    Отсутствуют данные для отображения
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </Paper>
-      );
-    }}
-  </Query>
-);
+  return (
+    <Paper elevation={2}>
+      <SearchBar searchQuery={searchQuery} />
+      <FilterBar bik={bik} name={name} />
+      <Table>
+        <Header />
+        <TableBody>
+          {filterData.length ? (
+            filterData.map((bank, i) => (
+              <TableRow key={bank.id}>
+                <TableCell>{i + 1}</TableCell>
+                <Bank data={bank} />
+              </TableRow>
+            ))
+          ) : (
+            <TableRow style={{ height: '300px' }}>
+              <TableCell
+                colSpan={6}
+                style={{ textAlign: 'center', paddingTop: 0, paddingBottom: 0 }}
+              >
+                Отсутствуют данные для отображения
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </Paper>
+  );
+};

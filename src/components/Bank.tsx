@@ -2,7 +2,7 @@ import React, { useState, Fragment } from 'react';
 import { BankInformation } from '../store/resolver/Query/listBank';
 import { TableCell, TextField, IconButton } from '@material-ui/core';
 import { Icon } from '@material-ui/core';
-import { Mutation } from 'react-apollo';
+import { useMutation } from '@apollo/react-hooks';
 import { DeleteVariables, DELETE_BANK } from '../store/resolver/Mutation/deleteBank';
 import { UpdateBankVariables, UPDATE_BANK } from '../store/resolver/Mutation/updateBank';
 
@@ -16,6 +16,9 @@ type EditProps = Props & {
 
 const EditColumns = ({ data: { id, ...props }, action }: EditProps) => {
   const [values, setValues] = useState<typeof props>(props);
+  const [updateBank] = useMutation<boolean, UpdateBankVariables>(UPDATE_BANK, {
+    onError: e => console.log(e),
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValues({
@@ -63,21 +66,14 @@ const EditColumns = ({ data: { id, ...props }, action }: EditProps) => {
         />
       </TableCell>
       <TableCell>
-        <Mutation<boolean, UpdateBankVariables>
-          mutation={UPDATE_BANK}
-          onError={e => console.log(e)}
+        <IconButton
+          onClick={() => {
+            action();
+            updateBank({ variables: { id, payload: { ...values } } });
+          }}
         >
-          {updateBank => (
-            <IconButton
-              onClick={() => {
-                action();
-                updateBank({ variables: { id, payload: { ...values } } });
-              }}
-            >
-              <Icon>save</Icon>
-            </IconButton>
-          )}
-        </Mutation>
+          <Icon>save</Icon>
+        </IconButton>
         <IconButton onClick={action}>
           <Icon>cancel</Icon>
         </IconButton>
@@ -88,6 +84,9 @@ const EditColumns = ({ data: { id, ...props }, action }: EditProps) => {
 
 export const Bank = ({ data }: Props) => {
   const [isEdit, setIsEdit] = useState(false);
+  const [deleteBank] = useMutation<boolean, DeleteVariables>(DELETE_BANK, {
+    onError: e => console.log(e),
+  });
   const { id, bik, correspondentAccount, name, adress } = data;
 
   const DefaultColumns = () => (
@@ -100,13 +99,9 @@ export const Bank = ({ data }: Props) => {
         <IconButton onClick={() => setIsEdit(true)}>
           <Icon>edit</Icon>
         </IconButton>
-        <Mutation<boolean, DeleteVariables> mutation={DELETE_BANK}>
-          {deleteBank => (
-            <IconButton onClick={() => deleteBank({ variables: { id } })}>
-              <Icon>delete</Icon>
-            </IconButton>
-          )}
-        </Mutation>
+        <IconButton onClick={() => deleteBank({ variables: { id } })}>
+          <Icon>delete</Icon>
+        </IconButton>
       </TableCell>
     </Fragment>
   );
