@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, Fragment, Dispatch, SetStateAction} from 'react';
 import { BankInformation } from '../store/resolver/Query/listBank';
 import { TableCell, TextField, IconButton } from '@material-ui/core';
 import { Icon } from '@material-ui/core';
@@ -11,10 +11,10 @@ type Props = {
 };
 
 type EditProps = Props & {
-  action: () => void;
+  setIsEdit: Dispatch<SetStateAction<boolean>>
 };
 
-const EditColumns = ({ data: { id, ...props }, action }: EditProps) => {
+const EditColumns = ({ data: { id, ...props }, setIsEdit }: EditProps) => {
   const [values, setValues] = useState<typeof props>(props);
   const [updateBank] = useMutation<boolean, UpdateBankVariables>(UPDATE_BANK, {
     onError: e => console.log(e),
@@ -68,13 +68,13 @@ const EditColumns = ({ data: { id, ...props }, action }: EditProps) => {
       <TableCell>
         <IconButton
           onClick={() => {
-            action();
+            setIsEdit(false);
             updateBank({ variables: { id, payload: { ...values } } });
           }}
         >
           <Icon>save</Icon>
         </IconButton>
-        <IconButton onClick={action}>
+        <IconButton onClick={() => setIsEdit(false)}>
           <Icon>cancel</Icon>
         </IconButton>
       </TableCell>
@@ -107,7 +107,7 @@ export const Bank = ({ data }: Props) => {
   );
 
   return isEdit ? (
-    <EditColumns data={data} action={() => setIsEdit(false)} />
+    <EditColumns data={data} setIsEdit={setIsEdit} />
   ) : (
     <DefaultColumns />
   );
