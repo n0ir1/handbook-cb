@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import TextField from '@material-ui/core/TextField';
-import { Mutation } from 'react-apollo';
+import { useMutation } from '@apollo/react-hooks';
 import { ADD_BANK, AddBankVariables } from '../store/resolver/Mutation/addBank';
 import { Button, makeStyles, Theme, createStyles, Paper } from '@material-ui/core';
 
@@ -38,6 +38,10 @@ const defaultState = {
 export const AddForm = () => {
   const classes = useStyles();
   const [values, setValues] = useState<State>(defaultState);
+  const [addBank] = useMutation<boolean, AddBankVariables>(ADD_BANK, {
+    onError: e => console.log(e),
+    onCompleted: () => setValues(defaultState),
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValues({
@@ -47,74 +51,64 @@ export const AddForm = () => {
   };
 
   return (
-    <Mutation<boolean, AddBankVariables>
-      mutation={ADD_BANK}
-      onError={err => console.log(err)}
-      onCompleted={() => setValues(defaultState)}
-    >
-      {addBank => {
-        return (
-          <Paper className={classes.root}>
-            <form
-              className={classes.container}
-              onSubmit={e => {
-                e.preventDefault();
-                addBank({
-                  variables: {
-                    input: {
-                      ...values,
-                    },
-                  },
-                });
-              }}
-            >
-              <TextField
-                label="Бик"
-                name="bik"
-                value={values.bik}
-                onChange={handleChange}
-                className={classes.textField}
-                margin="none"
-                autoComplete="off"
-                required
-              />
-              <TextField
-                label="Корр.счет"
-                name="correspondentAccount"
-                value={values.correspondentAccount}
-                onChange={handleChange}
-                className={classes.textField}
-                margin="none"
-                autoComplete="off"
-                required
-              />
-              <TextField
-                label="Название"
-                name="name"
-                value={values.name}
-                onChange={handleChange}
-                className={classes.textField}
-                margin="none"
-                autoComplete="off"
-                required
-              />
-              <TextField
-                label="Адрес"
-                name="adress"
-                value={values.adress}
-                onChange={handleChange}
-                className={classes.textField}
-                margin="none"
-                autoComplete="off"
-                required
-              />
-              <Button type="submit" color="primary" size="small" variant="outlined">
-                Добавить
-              </Button>
-            </form>
-          </Paper>
-        );
-      }}
-    </Mutation>
+    <Paper className={classes.root}>
+      <form
+        className={classes.container}
+        onSubmit={e => {
+          e.preventDefault();
+          addBank({
+            variables: {
+              input: {
+                ...values,
+              },
+            },
+          });
+        }}
+      >
+        <TextField
+          label="Бик"
+          name="bik"
+          value={values.bik}
+          onChange={handleChange}
+          className={classes.textField}
+          margin="none"
+          autoComplete="off"
+          required
+        />
+        <TextField
+          label="Корр.счет"
+          name="correspondentAccount"
+          value={values.correspondentAccount}
+          onChange={handleChange}
+          className={classes.textField}
+          margin="none"
+          autoComplete="off"
+          required
+        />
+        <TextField
+          label="Название"
+          name="name"
+          value={values.name}
+          onChange={handleChange}
+          className={classes.textField}
+          margin="none"
+          autoComplete="off"
+          required
+        />
+        <TextField
+          label="Адрес"
+          name="adress"
+          value={values.adress}
+          onChange={handleChange}
+          className={classes.textField}
+          margin="none"
+          autoComplete="off"
+          required
+        />
+        <Button type="submit" color="primary" size="small" variant="outlined">
+          Добавить
+        </Button>
+      </form>
+    </Paper>
   );
 };
