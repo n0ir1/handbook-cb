@@ -14,9 +14,9 @@ import { SearchBar } from './SearchBar';
 import { FilterBar } from './FilterBar';
 import { QueryListBank, fragmentBankInformation } from '../store/resolver/Query/listBank';
 import { SearchQuery } from '../store/resolver/Query/searchQuery';
-import { FilterNamesQuery } from '../store/resolver/Query/filterNames';
+import { FiltersQuery, fragmentFilters } from '../store/resolver/Query/filters';
 
-type QueryListBankDetails = QueryListBank & SearchQuery & FilterNamesQuery;
+type QueryListBankDetails = QueryListBank & SearchQuery & FiltersQuery;
 
 const GET_BANKS_DETAILS = gql`
   query {
@@ -25,12 +25,12 @@ const GET_BANKS_DETAILS = gql`
       ...BankInformation
     }
     searchQuery @client
-    filterNames @client {
-      name
-      bik
+    filters @client {
+      ...FieldFilters
     }
   }
   ${fragmentBankInformation}
+  ${fragmentFilters}
 `;
 
 const searchInField = (value: string, key: string) => value.toLowerCase().includes(key);
@@ -86,7 +86,7 @@ export const ListBank = () => {
   const {
     listBank,
     searchQuery,
-    filterNames: { name, bik },
+    filters: { name, bik },
   } = data;
 
   const searchData = searchByValue(listBank, searchQuery, ({ id, ...bankInfo }, key) =>

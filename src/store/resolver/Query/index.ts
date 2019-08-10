@@ -1,5 +1,5 @@
 import { listBank } from './listBank';
 import { searchQuery } from './searchQuery';
-import { filterNames } from './filterNames';
+import { filters } from './filters';
 
-export { listBank, searchQuery, filterNames };
+export { listBank, searchQuery, filters };

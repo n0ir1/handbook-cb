@@ -1,11 +1,8 @@
 import React from 'react';
 import { useMutation } from '@apollo/react-hooks';
 import { makeStyles, Toolbar, TextField, Icon, InputAdornment } from '@material-ui/core';
-import { FilterNames } from '../store/resolver/Query/filterNames';
-import {
-  SET_FILTER_NAME,
-  FilterNamesVariables,
-} from '../store/resolver/Mutation/setFilterName';
+import { Filters } from '../store/resolver/Query/filters';
+import { SetFiltersVariables, SET_FILTERS } from '../store/resolver/Mutation/setFilters';
 
 const useStyles = makeStyles({
   root: {
@@ -23,9 +20,9 @@ const useStyles = makeStyles({
   },
 });
 
-export const FilterBar = ({ bik, name }: FilterNames) => {
+export const FilterBar = ({ bik, name }: Filters) => {
   const classes = useStyles();
-  const [setFilterName] = useMutation<boolean, FilterNamesVariables>(SET_FILTER_NAME, {
+  const [setFilters] = useMutation<boolean, SetFiltersVariables>(SET_FILTERS, {
     onError: e => console.log(e),
   });
 
@@ -34,7 +31,7 @@ export const FilterBar = ({ bik, name }: FilterNames) => {
       <TextField
         className={classes.input}
         placeholder="Фильтр по БИК"
-        onChange={e => setFilterName({ variables: { name, bik: e.target.value } })}
+        onChange={e => setFilters({ variables: { name, bik: e.target.value } })}
         value={bik}
         InputProps={{
           startAdornment: (
@@ -53,7 +50,7 @@ export const FilterBar = ({ bik, name }: FilterNames) => {
       <TextField
         className={classes.input}
         placeholder="Фильтр по названию"
-        onChange={e => setFilterName({ variables: { bik, name: e.target.value } })}
+        onChange={e => setFilters({ variables: { bik, name: e.target.value } })}
         value={name}
         InputProps={{
           startAdornment: (

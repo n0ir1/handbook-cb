@@ -1,8 +1,8 @@
 export const defaultState = {
   listBank: [],
   searchQuery: '',
-  filterNames: {
-    __typename: 'FilterNames',
+  filters: {
+    __typename: 'Filters',
     name: '',
     bik: '',
   },
